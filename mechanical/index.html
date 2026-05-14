@@ -1,0 +1,1778 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FirstCall Mechanical — Commercial HVAC &amp; building services in Columbus, DFW, and Austin</title>
+  <link rel="canonical" href="https://firstcallmechanical.com/" />
+  <meta name="description" content="FirstCall Mechanical delivers commercial HVAC, building controls, planned maintenance, and 24/7 emergency service in Columbus OH, Dallas-Fort Worth TX, and Austin TX — backed by a 25-branch national platform." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="FirstCall Mechanical — Commercial mechanical service" />
+  <meta property="og:description" content="Local mechanical service in Columbus, DFW, and Austin — backed by a national platform of 25 partner branches across 11 states." />
+  <meta property="og:url" content="https://firstcallmechanical.com/" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=IBM+Plex+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- Leaflet (open-source map library, no API key) -->
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+    integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+
+  <style>
+    /* ===== TOKENS (mirrored from index.html — single source of truth in shared/css/tokens.css) ===== */
+    :root {
+      --color-primary: #1A4120;
+      --color-primary-dark: #0F2814;
+      --color-primary-mid: #2D5F36;
+      --color-primary-soft: #4A7D52;
+      --color-accent: #00558C;
+      --color-accent-dark: #003D66;
+      --color-accent-light: #5BA3D6;
+      --color-bg: #FCFBF7;
+      --color-bg-soft: #F4F2EA;
+      --color-bg-section: #EDE9DC;
+      --color-bg-dark: #0F2814;
+      --color-bg-card: #FFFFFF;
+      --color-text: #1A2331;
+      --color-text-muted: #5A6371;
+      --color-text-light: #8A93A1;
+      --color-text-on-dark: #F2EFE3;
+      --color-text-on-primary: #FFFFFF;
+      --color-border: #E5E1D2;
+      --color-border-strong: #C9C7B7;
+      --color-border-dark: #0F2814;
+
+      --font-display: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+      --font-body:    "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+      --text-xs: 0.75rem; --text-sm: 0.875rem; --text-base: 1rem;
+      --text-lg: 1.125rem; --text-xl: 1.25rem; --text-2xl: 1.5rem;
+      --text-3xl: 1.875rem; --text-4xl: 2.25rem; --text-5xl: 3rem;
+      --text-6xl: 3.75rem; --text-7xl: 4.5rem;
+
+      --weight-regular: 400; --weight-medium: 500; --weight-semibold: 600;
+      --weight-bold: 700; --weight-extrabold: 800;
+
+      --leading-tight: 1.15; --leading-snug: 1.3;
+      --leading-normal: 1.55; --leading-relaxed: 1.7;
+      --tracking-tight: -0.02em; --tracking-normal: 0; --tracking-caps: 0.08em;
+
+      --space-1: 0.25rem; --space-2: 0.5rem; --space-3: 0.75rem;
+      --space-4: 1rem; --space-5: 1.5rem; --space-6: 2rem;
+      --space-7: 3rem; --space-8: 4rem; --space-9: 6rem;
+      --space-10: 8rem;
+
+      --container-content: 1440px;
+      --container-2xl: 1600px;
+      --header-height: 80px;
+      --pad-x: clamp(1.25rem, 4vw, 3rem);
+
+      --radius-sm: 4px; --radius-md: 8px; --radius-lg: 12px;
+      --radius-xl: 16px; --radius-pill: 999px;
+
+      --shadow-sm: 0 1px 3px rgba(15, 42, 31, 0.06), 0 1px 2px rgba(15, 42, 31, 0.04);
+      --shadow-md: 0 4px 12px rgba(15, 42, 31, 0.08), 0 2px 4px rgba(15, 42, 31, 0.04);
+      --shadow-lg: 0 12px 32px rgba(15, 42, 31, 0.10), 0 4px 8px rgba(15, 42, 31, 0.04);
+      --shadow-xl: 0 24px 48px rgba(15, 42, 31, 0.14), 0 8px 16px rgba(15, 42, 31, 0.06);
+
+      --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+      --duration-fast: 150ms; --duration-base: 200ms; --duration-slow: 320ms;
+      --z-header: 300; --z-toast: 600;
+      --focus-ring: 0 0 0 3px rgba(0, 85, 140, 0.35);
+    }
+
+    /* ===== BASE ===== */
+    *, *::before, *::after { box-sizing: border-box; }
+    * { margin: 0; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-height: 100vh;
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      line-height: var(--leading-normal);
+      color: var(--color-text);
+      background: var(--color-bg);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+    img, svg { display: block; max-width: 100%; height: auto; }
+    button, input, select, textarea { font: inherit; color: inherit; }
+    button { background: none; border: none; cursor: pointer; }
+    a { color: var(--color-accent); text-decoration: none; transition: color var(--duration-base) var(--ease-out); }
+    a:hover { color: var(--color-accent-dark); }
+    a:focus-visible, button:focus-visible, input:focus-visible {
+      outline: none;
+      box-shadow: var(--focus-ring);
+      border-radius: var(--radius-sm);
+    }
+    ul { padding-left: 1.25em; list-style: none; padding: 0; }
+
+    h1, h2, h3, h4, h5, h6 {
+      font-family: var(--font-display);
+      font-weight: var(--weight-bold);
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-tight);
+      color: var(--color-text);
+    }
+    h1 { font-size: clamp(2.25rem, 4.5vw, var(--text-6xl)); }
+    h2 { font-size: clamp(1.875rem, 3.5vw, var(--text-5xl)); }
+    h3 { font-size: clamp(1.5rem, 2.5vw, var(--text-4xl)); }
+    h4 { font-size: var(--text-2xl); letter-spacing: var(--tracking-normal); }
+    p { line-height: var(--leading-normal); color: var(--color-text); }
+
+    .lead {
+      font-size: var(--text-lg);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-muted);
+      max-width: 60ch;
+    }
+    .eyebrow {
+      display: inline-block;
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-caps);
+      color: var(--color-accent);
+      margin-bottom: var(--space-3);
+    }
+    .text-muted { color: var(--color-text-muted); }
+
+    .container {
+      width: 100%;
+      max-width: var(--container-content);
+      margin-inline: auto;
+      padding-inline: var(--pad-x);
+    }
+
+    .section { padding-block: var(--space-9); }
+    @media (max-width: 767px) { .section { padding-block: var(--space-7); } }
+
+    .skip-link {
+      position: absolute;
+      top: -100px;
+      left: var(--space-4);
+      padding: var(--space-3) var(--space-5);
+      background: var(--color-primary);
+      color: var(--color-text-on-primary);
+      border-radius: var(--radius-md);
+      font-weight: var(--weight-semibold);
+      z-index: var(--z-toast);
+      transition: top var(--duration-base) var(--ease-out);
+    }
+    .skip-link:focus { top: var(--space-4); }
+
+    ::selection { background: var(--color-accent); color: #fff; }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: var(--space-2);
+      padding: var(--space-3) var(--space-6);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-semibold);
+      line-height: 1;
+      border: 2px solid transparent;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color var(--duration-base) var(--ease-out),
+                  border-color var(--duration-base) var(--ease-out),
+                  color var(--duration-base) var(--ease-out),
+                  transform var(--duration-fast) var(--ease-out),
+                  box-shadow var(--duration-base) var(--ease-out);
+      white-space: nowrap;
+    }
+    .btn:active { transform: translateY(1px); }
+    .btn--primary {
+      background: var(--color-accent);
+      color: #fff;
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-sm);
+    }
+    .btn--primary:hover {
+      background: var(--color-accent-dark);
+      border-color: var(--color-accent-dark);
+      color: #fff;
+      box-shadow: var(--shadow-md);
+    }
+    .btn--outline {
+      background: transparent;
+      color: var(--color-primary);
+      border-color: var(--color-primary);
+    }
+    .btn--outline:hover { background: var(--color-primary); color: #fff; }
+    .btn--outline-on-dark {
+      background: transparent;
+      color: #fff;
+      border-color: rgba(255,255,255,0.4);
+    }
+    .btn--outline-on-dark:hover { background: rgba(255,255,255,0.1); border-color: #fff; color: #fff; }
+    .btn--sm { padding: var(--space-2) var(--space-4); font-size: var(--text-sm); }
+    .btn--lg { padding: var(--space-4) var(--space-7); font-size: var(--text-lg); }
+
+    .link-arrow {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-weight: var(--weight-semibold);
+      color: var(--color-accent);
+      text-decoration: none;
+      transition: gap var(--duration-base) var(--ease-out), color var(--duration-base) var(--ease-out);
+    }
+    .link-arrow::after {
+      content: "→";
+      transition: transform var(--duration-base) var(--ease-out);
+      font-weight: var(--weight-regular);
+    }
+    .link-arrow:hover { color: var(--color-accent-dark); gap: var(--space-3); }
+    .link-arrow:hover::after { transform: translateX(2px); }
+
+    /* ===== HEADER (dark green) ===== */
+    .site-header {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-header);
+      background: rgba(15, 40, 20, 0.92);
+      backdrop-filter: saturate(180%) blur(10px);
+      -webkit-backdrop-filter: saturate(180%) blur(10px);
+      border-bottom: 1px solid rgba(74, 125, 82, 0.35);
+      height: var(--header-height);
+      display: flex;
+      align-items: center;
+      transition: box-shadow var(--duration-base) var(--ease-out), background var(--duration-base) var(--ease-out);
+    }
+    .site-header.is-scrolled {
+      box-shadow: 0 1px 0 rgba(0,0,0,0.4), var(--shadow-sm);
+      background: rgba(15, 40, 20, 0.97);
+    }
+    .site-header__inner {
+      width: 100%;
+      max-width: var(--container-2xl);
+      margin-inline: auto;
+      padding-inline: var(--pad-x);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: var(--space-6);
+    }
+    .site-header__logo { display: inline-flex; align-items: center; text-decoration: none; }
+    .site-header__logo svg { height: 56px; width: auto; display: block; }
+
+    .site-nav { display: flex; align-items: center; gap: var(--space-6); }
+    .site-nav__link {
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      font-weight: var(--weight-medium);
+      color: var(--color-text-on-dark);
+      text-decoration: none;
+      padding: var(--space-2) 0;
+      position: relative;
+      transition: color var(--duration-base) var(--ease-out);
+    }
+    .site-nav__link::after {
+      content: "";
+      position: absolute;
+      left: 0; bottom: -4px;
+      width: 0; height: 2px;
+      background: var(--color-accent-light);
+      transition: width var(--duration-base) var(--ease-out);
+    }
+    .site-nav__link[aria-current="page"] {
+      color: var(--color-accent-light);
+    }
+    .site-nav__link[aria-current="page"]::after,
+    .site-nav__link:hover::after { width: 100%; }
+    .site-nav__link:hover { color: var(--color-accent-light); }
+
+    .site-header__cta { display: flex; align-items: center; gap: var(--space-3); }
+    .menu-toggle {
+      display: none;
+      width: 44px; height: 44px;
+      align-items: center; justify-content: center;
+      border-radius: var(--radius-md);
+    }
+    .menu-toggle:hover { background: rgba(242, 239, 227, 0.1); }
+    .menu-toggle__bars,
+    .menu-toggle__bars::before,
+    .menu-toggle__bars::after {
+      display: block;
+      width: 22px; height: 2px;
+      background: var(--color-text-on-dark);
+      position: relative;
+      transition: transform var(--duration-base) var(--ease-out), top var(--duration-base) var(--ease-out);
+    }
+    .menu-toggle__bars::before,
+    .menu-toggle__bars::after { content: ""; position: absolute; left: 0; }
+    .menu-toggle__bars::before { top: -7px; }
+    .menu-toggle__bars::after { top: 7px; }
+
+    @media (max-width: 1023px) {
+      .menu-toggle { display: inline-flex; }
+      .site-nav {
+        position: fixed;
+        top: var(--header-height);
+        left: 0; right: 0;
+        background: var(--color-primary-dark);
+        flex-direction: column;
+        align-items: stretch;
+        padding: var(--space-5);
+        border-bottom: 1px solid var(--color-border);
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-120%);
+        transition: transform var(--duration-slow) var(--ease-out);
+        gap: 0;
+      }
+      .site-nav.is-open { transform: translateY(0); }
+      .site-nav__link {
+        padding-block: var(--space-4);
+        border-bottom: 1px solid rgba(74, 125, 82, 0.4);
+        font-size: var(--text-lg);
+      }
+      .site-nav__link::after { display: none; }
+      .site-header__cta .btn { display: none; }
+      .hide-mobile { display: none !important; }
+    }
+
+    /* ===== FOOTER ===== */
+    .site-footer {
+      background: var(--color-bg-dark);
+      color: var(--color-text-on-dark);
+      padding-block: var(--space-9) var(--space-6);
+    }
+    .site-footer a { color: var(--color-text-on-dark); text-decoration: none; }
+    .site-footer a:hover { color: var(--color-accent-light); }
+    .site-footer__grid {
+      display: grid;
+      grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: var(--space-7);
+      margin-bottom: var(--space-8);
+    }
+    @media (max-width: 1023px) { .site-footer__grid { grid-template-columns: 1fr 1fr; } }
+    @media (max-width: 639px) { .site-footer__grid { grid-template-columns: 1fr; } }
+    .site-footer__brand svg { height: 44px; width: auto; margin-bottom: var(--space-3); display: block; }
+    .site-footer__brand p {
+      color: rgba(241, 244, 241, 0.7);
+      max-width: 36ch;
+      margin-top: var(--space-3);
+      line-height: var(--leading-relaxed);
+    }
+    .site-footer__heading {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-caps);
+      color: var(--color-accent-light);
+      margin-bottom: var(--space-4);
+    }
+    .site-footer__list {
+      list-style: none; padding: 0;
+      display: flex; flex-direction: column; gap: var(--space-2);
+    }
+    .site-footer__list a { font-size: var(--text-base); }
+    .site-footer__bottom {
+      padding-top: var(--space-5);
+      border-top: 1px solid rgba(255,255,255,0.1);
+      display: flex; justify-content: space-between; flex-wrap: wrap;
+      gap: var(--space-4);
+      font-size: var(--text-sm);
+      color: rgba(241, 244, 241, 0.6);
+    }
+
+    /* ===== PAGE: LOCATIONS ===== */
+
+    /* Page hero */
+    .page-hero {
+      padding-block: var(--space-9) var(--space-7);
+      text-align: center;
+      background: var(--color-bg-soft);
+    }
+    .page-hero__inner { max-width: 800px; margin-inline: auto; }
+    .page-hero h1 { margin-bottom: var(--space-4); }
+    .page-hero .lead { margin-inline: auto; }
+    .page-hero__stats {
+      display: flex;
+      justify-content: center;
+      gap: var(--space-7);
+      margin-top: var(--space-6);
+      flex-wrap: wrap;
+    }
+    .page-hero__stat {
+      display: flex; flex-direction: column; align-items: center; gap: var(--space-1);
+    }
+    .page-hero__stat-num {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-extrabold);
+      color: var(--color-primary);
+      line-height: 1;
+    }
+    .page-hero__stat-label {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-caps);
+      color: var(--color-text-muted);
+    }
+
+    /* Map section */
+    /* Map (Leaflet container) */
+    .map-section { padding-block: var(--space-8); }
+    .map-large {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: var(--space-3);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+    }
+    #fc-map {
+      width: 100%;
+      height: 580px;
+      border-radius: var(--radius-lg);
+      background: var(--color-bg-soft);
+      font-family: var(--font-body);
+      position: relative;
+      isolation: isolate;
+    }
+    @media (max-width: 767px) { #fc-map { height: 420px; } }
+
+    /* Custom Leaflet marker (blue dot with pulse) */
+    .fc-marker {
+      position: relative;
+      width: 18px;
+      height: 18px;
+    }
+    .fc-marker__dot {
+      position: absolute;
+      inset: 0;
+      background: #00558C;
+      border: 2px solid #fff;
+      border-radius: 50%;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.35);
+      transition: transform var(--duration-base) var(--ease-out);
+    }
+    .fc-marker:hover .fc-marker__dot { transform: scale(1.25); }
+    .fc-marker__pulse {
+      position: absolute;
+      inset: 0;
+      background: #00558C;
+      border-radius: 50%;
+      opacity: 0.35;
+      animation: fc-pulse 2.2s cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    }
+    @keyframes fc-pulse {
+      0%   { transform: scale(1);   opacity: 0.4; }
+      70%  { transform: scale(2.6); opacity: 0; }
+      100% { transform: scale(2.6); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .fc-marker__pulse { animation: none; opacity: 0; }
+    }
+
+    /* Leaflet popup — FirstCall styling */
+    .fc-popup .leaflet-popup-content-wrapper {
+      border-radius: var(--radius-lg);
+      box-shadow: 0 10px 30px rgba(15, 42, 31, 0.18);
+      padding: 0;
+    }
+    .fc-popup .leaflet-popup-content {
+      margin: var(--space-5);
+      font-family: var(--font-body);
+      line-height: var(--leading-normal);
+      color: var(--color-text);
+      min-width: 200px;
+    }
+    .fc-popup .leaflet-popup-tip { box-shadow: 0 4px 8px rgba(15, 42, 31, 0.10); }
+    .fc-popup__location {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-caps);
+      color: var(--color-accent);
+      margin-bottom: var(--space-2);
+    }
+    .fc-popup__brand {
+      font-family: var(--font-display);
+      font-size: var(--text-lg);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-tight);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+      line-height: 1.2;
+    }
+    .fc-popup__addr {
+      font-size: var(--text-sm);
+      color: var(--color-text-muted);
+      margin-bottom: var(--space-3);
+    }
+    .fc-popup__phone {
+      display: block;
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--color-text);
+      margin-bottom: var(--space-3);
+      text-decoration: none;
+    }
+    .fc-popup__phone:hover { color: var(--color-accent); }
+    .fc-popup__cta {
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-semibold);
+      color: var(--color-accent);
+      text-decoration: none;
+    }
+    .fc-popup__cta::after {
+      content: "→";
+      transition: transform var(--duration-base) var(--ease-out);
+    }
+    .fc-popup__cta:hover { color: var(--color-accent-dark); }
+    .fc-popup__cta:hover::after { transform: translateX(3px); }
+
+    .leaflet-container a { color: var(--color-accent); }
+    .leaflet-container { font: inherit; }
+
+    /* Directory section */
+    .directory {
+      padding-block: var(--space-7) var(--space-9);
+    }
+    .directory__head {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: end;
+      gap: var(--space-5);
+      margin-bottom: var(--space-7);
+    }
+    .directory__head h2 { flex: 1 1 auto; min-width: 240px; max-width: 22ch; }
+    .directory__filter {
+      position: relative;
+      min-width: 280px;
+      flex: 0 0 auto;
+    }
+    .directory__filter input {
+      width: 100%;
+      padding: var(--space-3) var(--space-4) var(--space-3) calc(var(--space-4) + 28px);
+      font-family: var(--font-body);
+      font-size: var(--text-base);
+      color: var(--color-text);
+      background: var(--color-bg-card);
+      border: 1.5px solid var(--color-border-strong);
+      border-radius: var(--radius-md);
+      transition: border-color var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
+    }
+    .directory__filter input:hover { border-color: var(--color-text-muted); }
+    .directory__filter input:focus {
+      outline: none;
+      border-color: var(--color-accent);
+      box-shadow: 0 0 0 3px rgba(0, 85, 140, 0.15);
+    }
+    .directory__filter svg {
+      position: absolute;
+      left: var(--space-4);
+      top: 50%;
+      transform: translateY(-50%);
+      width: 18px;
+      height: 18px;
+      color: var(--color-text-light);
+      pointer-events: none;
+    }
+    .directory__count {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--color-text-muted);
+      margin-top: var(--space-3);
+    }
+
+    /* State group headers */
+    .state-group + .state-group { margin-top: var(--space-8); }
+    .state-group.is-empty { display: none; }
+    .state-group__heading {
+      font-family: var(--font-display);
+      font-size: var(--text-2xl);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-tight);
+      color: var(--color-text);
+      margin-bottom: var(--space-5);
+      padding-bottom: var(--space-3);
+      border-bottom: 1px solid var(--color-border);
+      display: flex;
+      align-items: baseline;
+      gap: var(--space-3);
+    }
+    .state-group__count {
+      font-family: var(--font-body);
+      font-size: var(--text-sm);
+      font-weight: var(--weight-medium);
+      color: var(--color-text-light);
+      letter-spacing: 0;
+    }
+
+    .directory__grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-5);
+    }
+    @media (max-width: 1023px) { .directory__grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 639px)  { .directory__grid { grid-template-columns: 1fr; } }
+
+    /* Location card — stretched-link pattern.
+       Card is an <article>; its primary <a> has ::after that fills
+       the whole card so the entire surface is clickable, without
+       nesting <a> inside <a>. */
+    .loc-card {
+      position: relative;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: var(--space-6);
+      display: flex;
+      flex-direction: column;
+      gap: var(--space-2);
+      color: var(--color-text);
+      transition: border-color var(--duration-base) var(--ease-out),
+                  box-shadow var(--duration-base) var(--ease-out),
+                  transform var(--duration-base) var(--ease-out);
+    }
+    .loc-card:hover {
+      border-color: var(--color-accent);
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-2px);
+    }
+    .loc-card.is-hidden { display: none; }
+
+    .loc-card__location {
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-caps);
+      color: var(--color-accent);
+    }
+    .loc-card__brand {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      letter-spacing: var(--tracking-tight);
+      color: var(--color-text);
+      margin: 0;
+    }
+    .loc-card__link {
+      color: inherit;
+      text-decoration: none;
+    }
+    .loc-card__link::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      border-radius: var(--radius-lg);
+    }
+    .loc-card__addr {
+      font-size: var(--text-sm);
+      line-height: var(--leading-relaxed);
+      color: var(--color-text-muted);
+      margin-top: var(--space-1);
+    }
+    .loc-card__cta {
+      margin-top: auto;
+      padding-top: var(--space-4);
+      font-size: var(--text-sm);
+      color: var(--color-accent);
+      font-weight: var(--weight-semibold);
+      display: inline-flex;
+      align-items: center;
+      gap: var(--space-2);
+    }
+    .loc-card__cta::after {
+      content: "→";
+      transition: transform var(--duration-base) var(--ease-out);
+      font-weight: var(--weight-regular);
+    }
+    .loc-card:hover .loc-card__cta::after { transform: translateX(3px); }
+
+    .directory__empty {
+      text-align: center;
+      padding: var(--space-8) var(--space-5);
+      color: var(--color-text-muted);
+      font-size: var(--text-lg);
+      display: none;
+    }
+    .directory__empty.is-visible { display: block; }
+
+    /* Acq CTA — same as homepage */
+    .acq-cta {
+      background: var(--color-bg-dark);
+      color: var(--color-text-on-dark);
+      padding-block: var(--space-10);
+      position: relative;
+      overflow: hidden;
+    }
+    .acq-cta::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 96'><polygon points='28,4 52,18 52,46 28,60 4,46 4,18' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.06'/><polygon points='0,52 24,66 24,94 0,108 -24,94 -24,66' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.06'/><polygon points='56,52 80,66 80,94 56,108 32,94 32,66' fill='none' stroke='%23ffffff' stroke-width='1' opacity='0.06'/></svg>");
+      background-size: 56px 96px;
+      pointer-events: none;
+    }
+    .acq-cta__inner {
+      position: relative;
+      max-width: 800px;
+      margin-inline: auto;
+      text-align: center;
+    }
+    .acq-cta__inner h2 { color: #fff; max-width: 18ch; margin-inline: auto; }
+    .acq-cta__inner p { color: rgba(255,255,255,0.85); }
+    .cta-row { display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center; }
+
+    /* ===== PAGE: MECHANICAL LANDING ===== */
+    .page-hero--mech { padding-block: var(--space-9) var(--space-7); }
+    .page-hero--mech .page-hero__inner { max-width: 920px; }
+    .page-hero--mech h1 { font-size: clamp(2.25rem, 4.5vw, var(--text-6xl)); margin-bottom: var(--space-5); }
+    .page-hero--mech .lead { font-size: var(--text-lg); max-width: 64ch; }
+
+    /* Branch picker — 3 featured FirstCall-owned branches */
+    .branch-picker { padding-block: var(--space-9); background: var(--color-bg); }
+    .section-head--center { text-align: center; max-width: 64ch; margin: 0 auto var(--space-7); }
+    .section-head--center .lead { margin-inline: auto; }
+    .branch-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: var(--space-5);
+    }
+    @media (max-width: 1023px) { .branch-grid { grid-template-columns: 1fr; } }
+    .branch-card {
+      position: relative;
+      display: flex; flex-direction: column;
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: transform var(--duration-base) var(--ease-out),
+                  box-shadow var(--duration-base) var(--ease-out),
+                  border-color var(--duration-base) var(--ease-out);
+      text-decoration: none;
+      color: var(--color-text);
+    }
+    .branch-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--color-accent-light);
+    }
+    .branch-card__media {
+      position: relative;
+      aspect-ratio: 16 / 9;
+      overflow: hidden;
+      background: var(--color-primary-dark);
+    }
+    .branch-card__video {
+      position: absolute; inset: 0;
+      width: 100%; height: 100%;
+      object-fit: cover;
+      transition: transform var(--duration-slow) var(--ease-out);
+    }
+    .branch-card:hover .branch-card__video { transform: scale(1.04); }
+    .branch-card__media::after {
+      content: "";
+      position: absolute; inset: 0;
+      background: linear-gradient(180deg, rgba(15, 40, 20, 0) 0%, rgba(15, 40, 20, 0.55) 100%);
+      pointer-events: none;
+    }
+    .branch-card__state-tag {
+      position: absolute; top: var(--space-4); left: var(--space-4);
+      font-family: var(--font-body);
+      font-size: var(--text-xs);
+      font-weight: var(--weight-semibold);
+      text-transform: uppercase;
+      letter-spacing: var(--tracking-caps);
+      color: #fff;
+      background: rgba(0, 0, 0, 0.45);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      padding: var(--space-2) var(--space-3);
+      border-radius: var(--radius-pill);
+      z-index: 1;
+    }
+    .branch-card__body {
+      flex: 1;
+      padding: var(--space-6);
+      display: flex; flex-direction: column;
+      gap: var(--space-3);
+    }
+    .branch-card__city {
+      font-family: var(--font-display);
+      font-size: var(--text-3xl);
+      font-weight: var(--weight-bold);
+      line-height: var(--leading-tight);
+      letter-spacing: var(--tracking-tight);
+    }
+    .branch-card__addr { color: var(--color-text-muted); font-size: var(--text-sm); line-height: var(--leading-snug); }
+    .branch-card__desc { color: var(--color-text-muted); font-size: var(--text-base); line-height: var(--leading-relaxed); }
+    .branch-card__phone { font-size: var(--text-sm); color: var(--color-text-muted); }
+    .branch-card__phone span { color: var(--color-text); font-weight: var(--weight-semibold); }
+    .branch-card__cta {
+      margin-top: auto; padding-top: var(--space-4);
+      display: inline-flex; align-items: center; gap: var(--space-2);
+      font-weight: var(--weight-semibold);
+      color: var(--color-accent);
+      font-size: var(--text-base);
+    }
+    .branch-card__cta::after { content: "→"; transition: transform var(--duration-base) var(--ease-out); }
+    .branch-card:hover .branch-card__cta::after { transform: translateX(4px); }
+
+    /* Capabilities (4-card grid, accent icons) */
+    .capabilities-section { padding-block: var(--space-9); background: var(--color-bg-soft); }
+    .capabilities-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-5);
+    }
+    @media (max-width: 1023px) { .capabilities-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (max-width: 479px)  { .capabilities-grid { grid-template-columns: 1fr; } }
+    .cap-card {
+      background: var(--color-bg-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-md);
+      padding: var(--space-6);
+      transition: transform var(--duration-base) var(--ease-out), box-shadow var(--duration-base) var(--ease-out);
+    }
+    .cap-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-md); }
+    .cap-card__icon {
+      width: 48px; height: 48px;
+      display: inline-flex; align-items: center; justify-content: center;
+      color: var(--color-accent);
+      background: rgba(0, 85, 140, 0.10);
+      border-radius: var(--radius-md);
+      margin-bottom: var(--space-3);
+    }
+    .cap-card__icon svg { width: 24px; height: 24px; }
+    .cap-card__title {
+      font-family: var(--font-display);
+      font-size: var(--text-xl);
+      font-weight: var(--weight-bold);
+      color: var(--color-text);
+      margin-bottom: var(--space-2);
+    }
+    .cap-card__body { color: var(--color-text-muted); font-size: var(--text-sm); line-height: var(--leading-relaxed); }
+
+    /* Parent-network CTA */
+    .parent-cta {
+      padding-block: var(--space-9);
+      background: var(--color-bg-dark);
+      color: var(--color-text-on-dark);
+      text-align: center;
+    }
+    .parent-cta h2 { color: #fff; max-width: 24ch; margin-inline: auto; }
+    .parent-cta .eyebrow { color: var(--color-accent-light); }
+    .parent-cta__body {
+      max-width: 56ch;
+      margin: var(--space-4) auto var(--space-6);
+      color: rgba(241, 244, 241, 0.78);
+      font-size: var(--text-lg);
+      line-height: var(--leading-relaxed);
+    }
+  </style>
+  <!-- fc:org-schema:start -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    "name": "FirstCall Mechanical",
+    "alternateName": [
+      "FirstCall"
+    ],
+    "url": "https://firstcallmechanical.com/",
+    "logo": "https://firstcallmechanical.com/shared/img/logos/firstcall-mechanical-color.svg",
+    "foundingDate": "2022",
+    "parentOrganization": {
+      "@type": "Organization",
+      "name": "FirstCall Group",
+      "url": "https://firstcallgroup.com/"
+    },
+    "description": "FirstCall Mechanical delivers commercial HVAC, building controls, planned maintenance, and 24/7 emergency service in Columbus OH, Dallas-Fort Worth TX, and Austin TX — backed by a 25-branch national platform.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "3105 Bee Caves Rd, Suite 250",
+      "addressLocality": "Austin",
+      "addressRegion": "TX",
+      "postalCode": "78746",
+      "addressCountry": "US"
+    },
+    "contactPoint": [
+      {
+        "@type": "ContactPoint",
+        "telephone": "+1-844-713-0220",
+        "contactType": "customer service",
+        "email": "info@firstcallmechanical.com",
+        "areaServed": "US",
+        "availableLanguage": [
+          "English"
+        ]
+      },
+      {
+        "@type": "ContactPoint",
+        "contactType": "acquisitions",
+        "email": "acquisitions@firstcallgroup.com",
+        "areaServed": "US"
+      }
+    ],
+    "sameAs": [
+      "https://www.linkedin.com/company/firstcall-mechanical/"
+    ],
+    "knowsAbout": [
+      "Commercial HVAC",
+      "Industrial HVAC",
+      "Building Controls",
+      "Building Management Systems",
+      "Building Automation Systems",
+      "Commercial Plumbing",
+      "Commercial Electrical",
+      "Planned Maintenance",
+      "Mechanical Retrofit",
+      "Chiller Service",
+      "Boiler Service",
+      "Rooftop Unit Replacement",
+      "Emergency HVAC Service",
+      "Commercial Mechanical Service"
+    ],
+    "numberOfEmployees": {
+      "@type": "QuantitativeValue",
+      "value": "500+"
+    },
+    "areaServed": [
+      {
+        "@type": "State",
+        "name": "Florida"
+      },
+      {
+        "@type": "State",
+        "name": "Georgia"
+      },
+      {
+        "@type": "State",
+        "name": "Louisiana"
+      },
+      {
+        "@type": "State",
+        "name": "Massachusetts"
+      },
+      {
+        "@type": "State",
+        "name": "North Carolina"
+      },
+      {
+        "@type": "State",
+        "name": "New Jersey"
+      },
+      {
+        "@type": "State",
+        "name": "New York"
+      },
+      {
+        "@type": "State",
+        "name": "Ohio"
+      },
+      {
+        "@type": "State",
+        "name": "South Carolina"
+      },
+      {
+        "@type": "State",
+        "name": "Texas"
+      },
+      {
+        "@type": "State",
+        "name": "Virginia"
+      }
+    ]
+  }
+  </script>
+  <!-- fc:org-schema:end -->
+</head>
+
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+
+  <!-- HEADER -->
+  <header class="site-header" role="banner">
+    <div class="site-header__inner">
+      <a class="site-header__logo" href="/" aria-label="FirstCall Mechanical — home">
+        <svg class="fc-logo-mech" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1502.68 337.31" aria-hidden="true"><g fill="#fff"><path d="M367.89,132.98c-4.99-2.89-10.93-5.51-17.99-5.51-27.68,0-73.04,42.48-147.1,137.74-32.5,39.69-58.88,60.09-79.34,70.94h167.65l97.04-168.07-20.26-35.09Z"/><path d="M182.96,249.38c55.28-71.12,93.34-111.73,123.33-131.62,15.83-10.49,30.07-15.59,43.53-15.59.1,0,.19.01.29.01l-12.19-21.11-.16-.1c-5.4-3.33-12-6.74-20.05-6.74-27.68,0-73.04,42.48-147.09,137.74-44.35,54.17-77.32,72.41-99.39,79.47l17.82,30.87c18.08-4.24,48.41-17.34,93.92-72.92Z"/><path d="M140.04,158.32c-44.58,54.45-77.65,72.6-99.73,79.58l17.82,30.86c18.22-4.57,48.19-18.33,92.64-72.62,55.28-71.12,93.34-111.74,123.33-131.62,15.83-10.49,30.07-15.59,43.52-15.59.59,0,1.18.05,1.78.07l-12.67-21.94c-5.31-3.25-11.77-6.47-19.6-6.47-27.68,0-73.04,42.48-147.1,137.74Z"/><path d="M120.2,142.49C175.48,71.37,213.53,30.75,243.53,10.87c7.14-4.73,13.94-8.31,20.5-10.87H97.04L0,168.07l27.2,47.12c18.19-4.48,48.26-18.07,92.99-72.7Z"/><path d="M496.7,69.75v31.5h70.2v36h-70.2v54.23h-46.8V33.74h122.41v36h-75.6Z"/><path d="M586.62,191.48v-127.26h37.76v127.26h-37.76Z"/><path d="M699.89,157.17h-19.97v34.31h-37.76v-127.26h59.36c34.13,0,53.73,16.34,53.73,45.2,0,18.88-7.62,32.68-21.42,40.48l25.78,41.57h-42.84l-16.88-34.31ZM701.52,128.12c11.26,0,17.79-6.17,17.79-17.61s-6.53-17.25-17.79-17.25h-21.6v34.85h21.6Z"/><path d="M879.24,77.29l-13.98,29.05c-13.07-7.44-31.59-14.16-42.3-14.16-6.35,0-10.53,2.18-10.53,6.9,0,18.7,66.44,7.62,66.44,53.55,0,27.05-23.96,39.94-52.46,39.94-21.6,0-45.2-7.62-61.18-20.15l14.16-28.68c13.07,11.07,34.31,19.42,47.38,19.42,7.99,0,13.07-2.72,13.07-8.53,0-19.24-66.44-7.08-66.44-51.92,0-24.51,20.88-40.12,52.65-40.12,19.42,0,39.39,5.81,53.19,14.7Z"/><path d="M961.46,94.36v97.12h-37.94v-97.12h-36.85v-30.14h111.83v30.14h-37.03Z"/><path d="M1157.57,60.3l-27,31.95c-9.9-12.6-24.53-20.93-37.58-20.93-21.38,0-37.58,17.33-37.58,40.5s16.2,40.73,37.58,40.73c12.15,0,26.78-7.2,37.58-18.23l27,28.8c-17.1,18.45-42.98,30.38-66.83,30.38-47.93,0-83.26-34.65-83.26-81.23s36-79.88,84.83-79.88c23.85,0,49.28,10.8,65.25,27.9Z"/><path d="M1198.98,171.15l-7.62,20.33h-38.85l54.28-127.26h38.85l52.46,127.26h-40.3l-7.44-20.33h-51.38ZM1225.13,101.98l-15.61,41.57h30.86l-15.25-41.57Z"/><path d="M1398.48,159.89v31.59h-91.13v-127.26h37.76v95.67h53.37Z"/><path d="M1502.68,159.89v31.59h-91.13v-127.26h37.76v95.67h53.37Z"/><path d="M542.82,335.83l-.14-68.51-32.7,56.7h-8.24l-32.7-55.82v67.63h-17.63v-103.36h15.21l39.52,68.51,38.81-68.51h15.21l.14,103.36h-17.48Z"/><path d="M661.8,319.74v16.09h-74.63v-103.36h72.64v16.09h-54.16v26.87h48.05v15.8h-48.05v28.5h56.15Z"/><path d="M674.87,284.15c0-30.86,22.74-53.16,53.31-53.16,16.21,0,30.14,6.05,39.38,17.28l-11.94,11.67c-7.25-8.12-16.21-12.11-26.58-12.11-20.61,0-35.54,15.06-35.54,36.32s14.93,36.32,35.54,36.32c10.38,0,19.33-3.99,26.58-12.26l11.94,11.81c-9.24,11.22-23.17,17.28-39.52,17.28-30.42,0-53.16-22.3-53.16-53.16Z"/><path d="M873.74,232.47v103.36h-18.48v-44.3h-51.46v44.3h-18.48v-103.36h18.48v42.67h51.46v-42.67h18.48Z"/><path d="M965,311.91h-49.75l-9.81,23.92h-19.05l44.78-103.36h18.2l44.92,103.36h-19.33l-9.95-23.92ZM958.89,296.85l-18.76-45.18-18.62,45.18h37.39Z"/><path d="M1095.35,232.47v103.36h-15.21l-54.87-69.99v69.99h-18.34v-103.36h15.21l54.87,69.99v-69.99h18.34Z"/><path d="M1122.08,232.47h18.48v103.36h-18.48v-103.36Z"/><path d="M1160.31,284.15c0-30.86,22.74-53.16,53.31-53.16,16.21,0,30.14,6.05,39.38,17.28l-11.94,11.67c-7.25-8.12-16.21-12.11-26.58-12.11-20.61,0-35.54,15.06-35.54,36.32s14.93,36.32,35.54,36.32c10.38,0,19.33-3.99,26.58-12.26l11.94,11.81c-9.24,11.22-23.17,17.28-39.52,17.28-30.42,0-53.16-22.3-53.16-53.16Z"/><path d="M1333.17,311.91h-49.75l-9.81,23.92h-19.05l44.78-103.36h18.2l44.92,103.36h-19.33l-9.95-23.92ZM1327.06,296.85l-18.76-45.18-18.62,45.18h37.39Z"/><path d="M1375.1,232.47h18.48v87.12h52.03v16.24h-70.51v-103.36Z"/><path d="M1472.82,320.08h-5v-2.23h12.07v2.23h-5v15.71h-2.06v-15.71Z"/><path d="M1495.69,335.8l-.02-13.07-5.27,10.89h-.96l-5.27-10.82v13h-2v-17.94h1.71l6.09,12.61,6-12.61h1.71l.02,17.94h-2Z"/></g></svg>
+      </a>
+
+      <nav class="site-nav" data-site-nav aria-label="Primary">
+        <a class="site-nav__link" href="#branches">Our Branches</a>
+        <a class="site-nav__link" href="#directory">All Locations</a>
+        <a class="site-nav__link" href="#capabilities">Capabilities</a>
+        <a class="site-nav__link" href="/" rel="noopener">FirstCall Group</a>
+      </nav>
+
+      <div class="site-header__cta">
+        <a class="btn btn--primary btn--sm hide-mobile" href="#branches">Find a Branch</a>
+        <button class="menu-toggle" data-menu-toggle aria-label="Open menu" aria-expanded="false">
+          <span class="menu-toggle__bars" aria-hidden="true"></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main id="main">
+
+    <!-- PAGE HERO -->
+    <section class="page-hero page-hero--mech">
+      <div class="container page-hero__inner">
+        <span class="eyebrow">FirstCall Mechanical</span>
+        <h1>Local mechanical service. National platform.</h1>
+        <p class="lead">Commercial HVAC, building controls, planned maintenance, and 24/7 emergency response — delivered by FirstCall teams in Columbus, Dallas-Fort Worth, and Austin. Backed by a national network of <span data-fc-count="branches">25</span> partner branches across <span data-fc-count="states">11</span> states.</p>
+        <div class="page-hero__cta" style="margin-top: var(--space-6); display: flex; flex-wrap: wrap; gap: var(--space-3); justify-content: center;">
+          <a class="btn btn--primary btn--lg" href="#branches">Find your branch</a>
+          <a class="btn btn--outline btn--lg" href="#directory">All FirstCall locations</a>
+        </div>
+        <div class="page-hero__stats">
+          <div class="page-hero__stat">
+            <div class="page-hero__stat-num">3</div>
+            <div class="page-hero__stat-label">FirstCall Mechanical branches</div>
+          </div>
+          <div class="page-hero__stat">
+            <div class="page-hero__stat-num" data-fc-count="branches">25</div>
+            <div class="page-hero__stat-label">Network branches</div>
+          </div>
+          <div class="page-hero__stat">
+            <div class="page-hero__stat-num" data-fc-count="states">11</div>
+            <div class="page-hero__stat-label">States</div>
+          </div>
+          <div class="page-hero__stat">
+            <div class="page-hero__stat-num">500+</div>
+            <div class="page-hero__stat-label">Technicians</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3-BRANCH PICKER (FirstCall Mechanical owned branches) -->
+    <section id="branches" class="branch-picker" aria-labelledby="branches-heading">
+      <div class="container">
+        <div class="section-head section-head--center">
+          <span class="eyebrow">Our Branches</span>
+          <h2 id="branches-heading">Pick your market.</h2>
+          <p class="lead">Each FirstCall Mechanical branch is locally staffed, locally accountable, and supported by the broader national platform. Same standards. Same playbook. Same response.</p>
+        </div>
+        <div class="branch-grid">
+          <a class="branch-card" href="/columbus">
+            <div class="branch-card__media">
+              <span class="branch-card__state-tag">Ohio</span>
+              <video class="branch-card__video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+                <source src="/assets/columbus/videos/columbus_downtown.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="branch-card__body">
+              <div class="branch-card__city">Columbus, OH</div>
+              <p class="branch-card__addr">3155 Lamb Avenue, Columbus, OH 43219</p>
+              <p class="branch-card__desc">Commercial mechanical service for central Ohio — HVAC, controls, planned maintenance, and project work.</p>
+              <p class="branch-card__phone">Dispatch: <span>(614) 253-9001</span></p>
+              <span class="branch-card__cta">Visit Columbus branch</span>
+            </div>
+          </a>
+          <a class="branch-card" href="/dfw">
+            <div class="branch-card__media">
+              <span class="branch-card__state-tag">Texas</span>
+              <video class="branch-card__video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+                <source src="/assets/dfw/videos/dfw_hero.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="branch-card__body">
+              <div class="branch-card__city">Dallas-Fort Worth, TX</div>
+              <p class="branch-card__addr">1750 Briercroft Court, Suite 128, Carrollton, TX 75006</p>
+              <p class="branch-card__desc">Serving the DFW metroplex with comprehensive commercial mechanical service and 24/7 emergency response.</p>
+              <p class="branch-card__phone">Dispatch: <span>(469) 669-0978</span></p>
+              <span class="branch-card__cta">Visit DFW branch</span>
+            </div>
+          </a>
+          <a class="branch-card" href="/central-texas">
+            <div class="branch-card__media">
+              <span class="branch-card__state-tag">Texas</span>
+              <video class="branch-card__video" autoplay muted loop playsinline preload="metadata" aria-hidden="true">
+                <source src="/assets/central-texas/videos/austin_hero.mp4" type="video/mp4" />
+              </video>
+            </div>
+            <div class="branch-card__body">
+              <div class="branch-card__city">Austin, TX</div>
+              <p class="branch-card__addr">10421 Old Manchaca Road, Suite 410, Austin, TX 78748</p>
+              <p class="branch-card__desc">Mechanical service across central Texas — HVAC, controls, and project work for Austin's commercial buildings.</p>
+              <p class="branch-card__phone">Local dispatch — see branch page</p>
+              <span class="branch-card__cta">Visit Austin branch</span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <!-- CAPABILITIES -->
+    <section id="capabilities" class="capabilities-section" aria-labelledby="caps-heading">
+      <div class="container">
+        <div class="section-head section-head--center">
+          <span class="eyebrow">What We Do</span>
+          <h2 id="caps-heading">Comprehensive commercial mechanical service.</h2>
+          <p class="lead">From chillers and rooftop units to building controls and emergency response — every FirstCall Mechanical branch delivers the full stack.</p>
+        </div>
+        <div class="capabilities-grid">
+          <article class="cap-card">
+            <span class="cap-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/><circle cx="12" cy="12" r="4"/></svg>
+            </span>
+            <h4 class="cap-card__title">HVAC Services</h4>
+            <p class="cap-card__body">Comprehensive heating, ventilation, and air conditioning service — install, repair, and optimization for commercial and industrial facilities.</p>
+          </article>
+          <article class="cap-card">
+            <span class="cap-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18M9 21V9"/></svg>
+            </span>
+            <h4 class="cap-card__title">Building Controls</h4>
+            <p class="cap-card__body">Design, installation, and integration of building automation systems that reduce operating costs and improve comfort.</p>
+          </article>
+          <article class="cap-card">
+            <span class="cap-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-3-6.7"/><path d="M21 4v6h-6"/></svg>
+            </span>
+            <h4 class="cap-card__title">Planned Maintenance</h4>
+            <p class="cap-card__body">Programmatic service plans with predictable scheduling, transparent reporting, and asset-level tracking.</p>
+          </article>
+          <article class="cap-card">
+            <span class="cap-card__icon" aria-hidden="true">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10"/></svg>
+            </span>
+            <h4 class="cap-card__title">24/7 Emergency</h4>
+            <p class="cap-card__body">Staffed dispatch and an on-call technician roster. Always available — your call gets answered, not routed to voicemail.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- MAP -->
+    <section class="map-section">
+      <div class="container">
+        <div class="section-head section-head--center">
+          <span class="eyebrow">The FirstCall Network</span>
+          <h2><span data-fc-count="branches">25</span> branches. <span data-fc-count="states">11</span> states.</h2>
+          <p class="lead">FirstCall companies are on the ground across major US metros — close to your facility, fast to respond.</p>
+        </div>
+        <div class="map-large">
+          <div id="fc-map" data-fc-map aria-label="Interactive US map of FirstCall branch locations"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- BRANCH DIRECTORY -->
+    <section id="directory" class="directory">
+      <div class="container">
+        <div class="directory__head">
+          <div>
+            <span class="eyebrow">Branch Directory</span>
+            <h2>Find any FirstCall company.</h2>
+          </div>
+          <div>
+            <div class="directory__filter">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <circle cx="11" cy="11" r="7"/>
+                <path d="m21 21-4.35-4.35"/>
+              </svg>
+              <input
+                type="search"
+                placeholder="Search by brand, city, or state..."
+                aria-label="Filter locations"
+                data-filter-input
+              />
+            </div>
+            <div class="directory__count" data-filter-count>Showing all locations</div>
+          </div>
+        </div>
+
+                                        <div data-directory-grid>
+        <section class="state-group" data-state-group="GA">
+          <h3 class="state-group__heading">
+            <span>Georgia</span>
+            <span class="state-group__count">4 locations</span>
+          </h3>
+          <div class="directory__grid">
+
+          <article class="loc-card" data-state="GA" data-loc="timco buford ga georgia 5309 palmero court, suite 200, buford, ga 30518">
+            <span class="loc-card__location">Buford, GA</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://timcoair.com/" rel="noopener">Timco</a></h3>
+            <p class="loc-card__addr">5309 Palmero Court, Suite 200, Buford, GA 30518</p>
+            <span class="loc-card__cta">Visit timcoair.com</span>
+          </article>          <article class="loc-card" data-state="GA" data-loc="c2h lawrenceville ga georgia 1625 lakes parkway, suite h, lawrenceville, ga 30043">
+            <span class="loc-card__location">Lawrenceville, GA</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://c2h.com/" rel="noopener">C2H</a></h3>
+            <p class="loc-card__addr">1625 Lakes Parkway, Suite H, Lawrenceville, GA 30043</p>
+            <span class="loc-card__cta">Visit c2h.com</span>
+          </article>
+          <article class="loc-card" data-state="GA" data-loc="conditioned air macon ga georgia 241 south street, macon, ga 31206">
+            <span class="loc-card__location">Macon, GA</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://www.conditionedairinc.com/" rel="noopener">Conditioned Air</a></h3>
+            <p class="loc-card__addr">241 South Street, Macon, GA 31206</p>
+            <span class="loc-card__cta">Visit conditionedairinc.com</span>
+          </article>
+          <article class="loc-card" data-state="GA" data-loc="starr macon ga georgia 539 bartlett street, macon, ga 31204">
+            <span class="loc-card__location">Macon, GA</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://www.starrelectric.biz/" rel="noopener">Starr</a></h3>
+            <p class="loc-card__addr">539 Bartlett Street, Macon, GA 31204</p>
+            <span class="loc-card__cta">Visit starrelectric.biz</span>
+          </article>
+          </div>
+        </section>
+        <section class="state-group" data-state-group="OH">
+          <h3 class="state-group__heading">
+            <span>Ohio</span>
+            <span class="state-group__count">2 locations</span>
+          </h3>
+          <div class="directory__grid">
+
+          <article class="loc-card" data-state="OH" data-loc="firstcall mechanical columbus oh ohio 3155 lamb avenue, columbus, oh 43219">
+            <span class="loc-card__location">Columbus, OH</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="/columbus" rel="noopener">FirstCall Mechanical — Columbus</a></h3>
+            <p class="loc-card__addr">3155 Lamb Avenue, Columbus, OH 43219</p>
+            <span class="loc-card__cta">Visit firstcallmechanical.com/columbus</span>
+          </article>          <article class="loc-card" data-state="OH" data-loc="cls facility services mentor oh ohio 8061 tyler boulevard, mentor, oh 44060">
+            <span class="loc-card__location">Mentor, OH</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://clsfacilityservices.com/" rel="noopener">CLS Facility Services</a></h3>
+            <p class="loc-card__addr">8061 Tyler Boulevard, Mentor, OH 44060</p>
+            <span class="loc-card__cta">Visit clsfacilityservices.com</span>
+          </article>
+          </div>
+        </section>
+        <section class="state-group" data-state-group="NC">
+          <h3 class="state-group__heading">
+            <span>North Carolina</span>
+            <span class="state-group__count">4 locations</span>
+          </h3>
+          <div class="directory__grid">
+
+          <article class="loc-card" data-state="NC" data-loc="r&amp;w mechanical asheville nc north carolina 90 london road, asheville, nc 28803">
+            <span class="loc-card__location">Asheville, NC</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://rw-mechanical.com/" rel="noopener">R&amp;W Mechanical</a></h3>
+            <p class="loc-card__addr">90 London Road, Asheville, NC 28803</p>
+            <span class="loc-card__cta">Visit rw-mechanical.com</span>
+          </article>          <article class="loc-card" data-state="NC" data-loc="charlotte temp controls charlotte nc north carolina 1705-a orr industrial court, charlotte, nc 28213">
+            <span class="loc-card__location">Charlotte, NC</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://ctccontrols.com/" rel="noopener">Charlotte Temp Controls</a></h3>
+            <p class="loc-card__addr">1705-A Orr Industrial Court, Charlotte, NC 28213</p>
+            <span class="loc-card__cta">Visit ctccontrols.com</span>
+          </article>
+          <article class="loc-card" data-state="NC" data-loc="str mechanical charlotte nc north carolina 11704 reames road, charlotte, nc 28269">
+            <span class="loc-card__location">Charlotte, NC</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://strmechanical.com/" rel="noopener">STR Mechanical</a></h3>
+            <p class="loc-card__addr">11704 Reames Road, Charlotte, NC 28269</p>
+            <span class="loc-card__cta">Visit strmechanical.com</span>
+          </article>
+          <article class="loc-card" data-state="NC" data-loc="str mechanical — raleigh raleigh nc north carolina 551 c pylon drive, suite c, raleigh, nc 27606">
+            <span class="loc-card__location">Raleigh, NC</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://strmechanical.com/" rel="noopener">STR Mechanical — Raleigh</a></h3>
+            <p class="loc-card__addr">551 C Pylon Drive, Suite C, Raleigh, NC 27606</p>
+            <span class="loc-card__cta">Visit strmechanical.com</span>
+          </article>
+          </div>
+        </section>
+        <section class="state-group" data-state-group="TX">
+          <h3 class="state-group__heading">
+            <span>Texas</span>
+            <span class="state-group__count">2 locations</span>
+          </h3>
+          <div class="directory__grid">
+
+          <article class="loc-card" data-state="TX" data-loc="firstcall mechanical — central texas austin tx texas 10421 old manchaca road, suite 410, austin, tx 78748">
+            <span class="loc-card__location">Austin, TX</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="/central-texas" rel="noopener">FirstCall Mechanical — Austin</a></h3>
+            <p class="loc-card__addr">10421 Old Manchaca Road, Suite 410, Austin, TX 78748</p>
+            <span class="loc-card__cta">Visit firstcallmechanical.com/central-texas</span>
+          </article>          <article class="loc-card" data-state="TX" data-loc="firstcall mechanical — dfw dallas fort worth carrollton tx texas 1750 briercroft court, suite 128, carrollton, tx 75006">
+            <span class="loc-card__location">Dallas-Fort Worth, TX</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="/dfw" rel="noopener">FirstCall Mechanical — DFW</a></h3>
+            <p class="loc-card__addr">1750 Briercroft Court, Suite 128, Carrollton, TX 75006</p>
+            <span class="loc-card__cta">Visit firstcallmechanical.com/dfw</span>
+          </article>
+          </div>
+        </section>
+        <section class="state-group" data-state-group="NY">
+          <h3 class="state-group__heading">
+            <span>New York</span>
+            <span class="state-group__count">3 locations</span>
+          </h3>
+          <div class="directory__grid">
+          <article class="loc-card" data-state="NY" data-loc="icacs (industrial cooling) freeport ny new york 83 hampton road, freeport, ny 11520">
+            <span class="loc-card__location">Freeport, NY</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://www.industrialcoolinginc.com/welcome.php" rel="noopener">ICACS (Industrial Cooling)</a></h3>
+            <p class="loc-card__addr">83 Hampton Road, Freeport, NY 11520</p>
+            <span class="loc-card__cta">Visit industrialcoolinginc.com</span>
+          </article>
+          <article class="loc-card" data-state="NY" data-loc="kats solutions wellsville ny new york 37 coats street, wellsville, ny 14895">
+            <span class="loc-card__location">Wellsville, NY</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://kats.pro/" rel="noopener">KATS Solutions</a></h3>
+            <p class="loc-card__addr">37 Coats Street, Wellsville, NY 14895</p>
+            <span class="loc-card__cta">Visit kats.pro</span>
+          </article>
+          <article class="loc-card" data-state="NY" data-loc="select environmental west babylon ny new york 210 dale street, west babylon, ny 11704">
+            <span class="loc-card__location">West Babylon, NY</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://www.selectenv.com/" rel="noopener">Select Environmental</a></h3>
+            <p class="loc-card__addr">210 Dale Street, West Babylon, NY 11704</p>
+            <span class="loc-card__cta">Visit selectenv.com</span>
+          </article>
+          </div>
+        </section>
+        <section class="state-group" data-state-group="FL">
+          <h3 class="state-group__heading">
+            <span>Florida</span>
+            <span class="state-group__count">3 locations</span>
+          </h3>
+          <div class="directory__grid">
+
+          <article class="loc-card" data-state="FL" data-loc="mecon clearwater fl florida 4181 116th terrace n, clearwater, fl 33762">
+            <span class="loc-card__location">Clearwater, FL</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://www.meconinc.com/" rel="noopener">Mecon</a></h3>
+            <p class="loc-card__addr">4181 116th Terrace N, Clearwater, FL 33762</p>
+            <span class="loc-card__cta">Visit meconinc.com</span>
+          </article>          <article class="loc-card" data-state="FL" data-loc="kenyon &amp; partners tampa fl florida 3203 queen palm drive, tampa, fl 33619">
+            <span class="loc-card__location">Tampa, FL</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://kenyonandpartners.com/" rel="noopener">Kenyon &amp; Partners</a></h3>
+            <p class="loc-card__addr">3203 Queen Palm Drive, Tampa, FL 33619</p>
+            <span class="loc-card__cta">Visit kenyonandpartners.com</span>
+          </article>
+          <article class="loc-card" data-state="FL" data-loc="kpi engineering tampa fl florida 3203 queen palm drive, tampa, fl 33619">
+            <span class="loc-card__location">Tampa, FL</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://kpiengineering.com/" rel="noopener">KPI Engineering</a></h3>
+            <p class="loc-card__addr">3203 Queen Palm Drive, Tampa, FL 33619</p>
+            <span class="loc-card__cta">Visit kpiengineering.com</span>
+          </article>
+          </div>
+        </section>
+        <section class="state-group" data-state-group="VA">
+          <h3 class="state-group__heading">
+            <span>Virginia</span>
+            <span class="state-group__count">2 locations</span>
+          </h3>
+          <div class="directory__grid">
+
+          <article class="loc-card" data-state="VA" data-loc="str mechanical — technical services chesapeake va virginia 825 green briar circle, suite a, chesapeake, va 23320">
+            <span class="loc-card__location">Chesapeake, VA</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://strmechanical.com/" rel="noopener">STR Mechanical — Chesapeake</a></h3>
+            <p class="loc-card__addr">825 Green Briar Circle, Suite A, Chesapeake, VA 23320</p>
+            <span class="loc-card__cta">Visit strmechanical.com</span>
+          </article>          <article class="loc-card" data-state="VA" data-loc="starnes lebanon va virginia 4082 us highway 19, lebanon, va 24266">
+            <span class="loc-card__location">Lebanon, VA</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://starnesinc.com/" rel="noopener">Starnes</a></h3>
+            <p class="loc-card__addr">4082 US Highway 19, Lebanon, VA 24266</p>
+            <span class="loc-card__cta">Visit starnesinc.com</span>
+          </article>
+          </div>
+        </section>
+        <section class="state-group" data-state-group="SC">
+          <h3 class="state-group__heading">
+            <span>South Carolina</span>
+            <span class="state-group__count">1 location</span>
+          </h3>
+          <div class="directory__grid">
+          <article class="loc-card" data-state="SC" data-loc="str mechanical — greenville liberty sc south carolina 550 blackbottom road, liberty, sc 29657">
+            <span class="loc-card__location">Liberty, SC</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://strmechanical.com/" rel="noopener">STR Mechanical — Greenville</a></h3>
+            <p class="loc-card__addr">550 Blackbottom Road, Liberty, SC 29657</p>
+            <span class="loc-card__cta">Visit strmechanical.com</span>
+          </article>
+          </div>
+        </section>
+        <section class="state-group" data-state-group="MA">
+          <h3 class="state-group__heading">
+            <span>Massachusetts</span>
+            <span class="state-group__count">1 location</span>
+          </h3>
+          <div class="directory__grid">
+          <article class="loc-card" data-state="MA" data-loc="lc anderson boston ma massachusetts 15 soldiers field place, boston, ma 02135">
+            <span class="loc-card__location">Boston, MA</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://www.lc-anderson.com/" rel="noopener">LC Anderson</a></h3>
+            <p class="loc-card__addr">15 Soldiers Field Place, Boston, MA 02135</p>
+            <span class="loc-card__cta">Visit lc-anderson.com</span>
+          </article>
+          </div>
+        </section>
+        <section class="state-group" data-state-group="LA">
+          <h3 class="state-group__heading">
+            <span>Louisiana</span>
+            <span class="state-group__count">1 location</span>
+          </h3>
+          <div class="directory__grid">
+          <article class="loc-card" data-state="LA" data-loc="optimum air solutions belle chasse la louisiana 127 keating drive, belle chasse, la 70037">
+            <span class="loc-card__location">Belle Chasse, LA</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://optimumairsolutions.com/" rel="noopener">Optimum Air Solutions</a></h3>
+            <p class="loc-card__addr">127 Keating Drive, Belle Chasse, LA 70037</p>
+            <span class="loc-card__cta">Visit optimumairsolutions.com</span>
+          </article>
+          </div>
+        </section>
+        <section class="state-group" data-state-group="NJ">
+          <h3 class="state-group__heading">
+            <span>New Jersey</span>
+            <span class="state-group__count">2 locations</span>
+          </h3>
+          <div class="directory__grid">
+          <article class="loc-card" data-state="NJ" data-loc="statewide conditioning south amboy nj new jersey 6200 main street, south amboy, nj 08879">
+            <span class="loc-card__location">South Amboy, NJ</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://www.statewideconditioninginc.com/" rel="noopener">Statewide</a></h3>
+            <p class="loc-card__addr">6200 Main Street, South Amboy, NJ 08879</p>
+            <span class="loc-card__cta">Visit statewideconditioninginc.com</span>
+          </article>
+          <article class="loc-card" data-state="NJ" data-loc="automated building solutions abs south amboy nj new jersey po box 3186, south amboy, nj 08879">
+            <span class="loc-card__location">South Amboy, NJ</span>
+            <h3 class="loc-card__brand"><a class="loc-card__link" href="https://absautomation.com/" rel="noopener">Automated Building Solutions (ABS)</a></h3>
+            <p class="loc-card__addr">PO Box 3186, South Amboy, NJ 08879</p>
+            <span class="loc-card__cta">Visit absautomation.com</span>
+          </article>
+          </div>
+        </section>
+        </div>
+
+        <div class="directory__empty" data-directory-empty>
+          No locations match your search. Try a different city, state, or brand name.
+        </div>
+      </div>
+    </section>
+
+    <!-- PARENT NETWORK CTA -->
+    <section class="parent-cta" aria-labelledby="parent-heading">
+      <div class="container">
+        <span class="eyebrow">The FirstCall Network</span>
+        <h2 id="parent-heading">Part of something bigger.</h2>
+        <p class="parent-cta__body">
+          FirstCall Mechanical is one operating company within FirstCall Group — a multi-region commercial mechanical services platform with branches across the United States.
+        </p>
+        <div class="cta-row">
+          <a href="/" class="btn btn--primary btn--lg">Visit FirstCall Group</a>
+          <a href="/locations" class="btn btn--outline-on-dark btn--lg">All FirstCall Locations</a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="container">
+      <div class="site-footer__grid">
+        <div class="site-footer__brand">
+          <svg class="fc-logo-mech-footer" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1502.68 337.31" aria-label="FirstCall Mechanical">
+            <g fill="#fff">
+              <path d="M367.89,132.98c-4.99-2.89-10.93-5.51-17.99-5.51-27.68,0-73.04,42.48-147.1,137.74-32.5,39.69-58.88,60.09-79.34,70.94h167.65l97.04-168.07-20.26-35.09Z"/>
+              <path d="M182.96,249.38c55.28-71.12,93.34-111.73,123.33-131.62,15.83-10.49,30.07-15.59,43.53-15.59.1,0,.19.01.29.01l-12.19-21.11-.16-.1c-5.4-3.33-12-6.74-20.05-6.74-27.68,0-73.04,42.48-147.09,137.74-44.35,54.17-77.32,72.41-99.39,79.47l17.82,30.87c18.08-4.24,48.41-17.34,93.92-72.92Z"/>
+              <path d="M140.04,158.32c-44.58,54.45-77.65,72.6-99.73,79.58l17.82,30.86c18.22-4.57,48.19-18.33,92.64-72.62,55.28-71.12,93.34-111.74,123.33-131.62,15.83-10.49,30.07-15.59,43.52-15.59.59,0,1.18.05,1.78.07l-12.67-21.94c-5.31-3.25-11.77-6.47-19.6-6.47-27.68,0-73.04,42.48-147.1,137.74Z"/>
+              <path d="M120.2,142.49C175.48,71.37,213.53,30.75,243.53,10.87c7.14-4.73,13.94-8.31,20.5-10.87H97.04L0,168.07l27.2,47.12c18.19-4.48,48.26-18.07,92.99-72.7Z"/>
+              <path d="M496.7,69.75v31.5h70.2v36h-70.2v54.23h-46.8V33.74h122.41v36h-75.6Z"/>
+              <path d="M586.62,191.48v-127.26h37.76v127.26h-37.76Z"/>
+              <path d="M699.89,157.17h-19.97v34.31h-37.76v-127.26h59.36c34.13,0,53.73,16.34,53.73,45.2,0,18.88-7.62,32.68-21.42,40.48l25.78,41.57h-42.84l-16.88-34.31ZM701.52,128.12c11.26,0,17.79-6.17,17.79-17.61s-6.53-17.25-17.79-17.25h-21.6v34.85h21.6Z"/>
+              <path d="M879.24,77.29l-13.98,29.05c-13.07-7.44-31.59-14.16-42.3-14.16-6.35,0-10.53,2.18-10.53,6.9,0,18.7,66.44,7.62,66.44,53.55,0,27.05-23.96,39.94-52.46,39.94-21.6,0-45.2-7.62-61.18-20.15l14.16-28.68c13.07,11.07,34.31,19.42,47.38,19.42,7.99,0,13.07-2.72,13.07-8.53,0-19.24-66.44-7.08-66.44-51.92,0-24.51,20.88-40.12,52.65-40.12,19.42,0,39.39,5.81,53.19,14.7Z"/>
+              <path d="M961.46,94.36v97.12h-37.94v-97.12h-36.85v-30.14h111.83v30.14h-37.03Z"/>
+              <path d="M1157.57,60.3l-27,31.95c-9.9-12.6-24.53-20.93-37.58-20.93-21.38,0-37.58,17.33-37.58,40.5s16.2,40.73,37.58,40.73c12.15,0,26.78-7.2,37.58-18.23l27,28.8c-17.1,18.45-42.98,30.38-66.83,30.38-47.93,0-83.26-34.65-83.26-81.23s36-79.88,84.83-79.88c23.85,0,49.28,10.8,65.25,27.9Z"/>
+              <path d="M1198.98,171.15l-7.62,20.33h-38.85l54.28-127.26h38.85l52.46,127.26h-40.3l-7.44-20.33h-51.38ZM1225.13,101.98l-15.61,41.57h30.86l-15.25-41.57Z"/>
+              <path d="M1398.48,159.89v31.59h-91.13v-127.26h37.76v95.67h53.37Z"/>
+              <path d="M1502.68,159.89v31.59h-91.13v-127.26h37.76v95.67h53.37Z"/>
+              <path d="M542.82,335.83l-.14-68.51-32.7,56.7h-8.24l-32.7-55.82v67.63h-17.63v-103.36h15.21l39.52,68.51,38.81-68.51h15.21l.14,103.36h-17.48Z"/>
+              <path d="M661.8,319.74v16.09h-74.63v-103.36h72.64v16.09h-54.16v26.87h48.05v15.8h-48.05v28.5h56.15Z"/>
+              <path d="M674.87,284.15c0-30.86,22.74-53.16,53.31-53.16,16.21,0,30.14,6.05,39.38,17.28l-11.94,11.67c-7.25-8.12-16.21-12.11-26.58-12.11-20.61,0-35.54,15.06-35.54,36.32s14.93,36.32,35.54,36.32c10.38,0,19.33-3.99,26.58-12.26l11.94,11.81c-9.24,11.22-23.17,17.28-39.52,17.28-30.42,0-53.16-22.3-53.16-53.16Z"/>
+              <path d="M873.74,232.47v103.36h-18.48v-44.3h-51.46v44.3h-18.48v-103.36h18.48v42.67h51.46v-42.67h18.48Z"/>
+              <path d="M965,311.91h-49.75l-9.81,23.92h-19.05l44.78-103.36h18.2l44.92,103.36h-19.33l-9.95-23.92ZM958.89,296.85l-18.76-45.18-18.62,45.18h37.39Z"/>
+              <path d="M1095.35,232.47v103.36h-15.21l-54.87-69.99v69.99h-18.34v-103.36h15.21l54.87,69.99v-69.99h18.34Z"/>
+              <path d="M1122.08,232.47h18.48v103.36h-18.48v-103.36Z"/>
+              <path d="M1160.31,284.15c0-30.86,22.74-53.16,53.31-53.16,16.21,0,30.14,6.05,39.38,17.28l-11.94,11.67c-7.25-8.12-16.21-12.11-26.58-12.11-20.61,0-35.54,15.06-35.54,36.32s14.93,36.32,35.54,36.32c10.38,0,19.33-3.99,26.58-12.26l11.94,11.81c-9.24,11.22-23.17,17.28-39.52,17.28-30.42,0-53.16-22.3-53.16-53.16Z"/>
+              <path d="M1333.17,311.91h-49.75l-9.81,23.92h-19.05l44.78-103.36h18.2l44.92,103.36h-19.33l-9.95-23.92ZM1327.06,296.85l-18.76-45.18-18.62,45.18h37.39Z"/>
+              <path d="M1375.1,232.47h18.48v87.12h52.03v16.24h-70.51v-103.36Z"/>
+              <path d="M1472.82,320.08h-5v-2.23h12.07v2.23h-5v15.71h-2.06v-15.71Z"/>
+              <path d="M1495.69,335.8l-.02-13.07-5.27,10.89h-.96l-5.27-10.82v13h-2v-17.94h1.71l6.09,12.61,6-12.61h1.71l.02,17.94h-2Z"/>
+            </g>
+          </svg>
+          <p>FirstCall Mechanical — commercial HVAC, building controls, and project work in Columbus, DFW, and Austin. Backed by the FirstCall Group national platform.</p>
+        </div>
+        <div>
+          <div class="site-footer__heading">Branches</div>
+          <ul class="site-footer__list">
+            <li><a href="/columbus">Columbus, OH</a></li>
+            <li><a href="/dfw">Dallas-Fort Worth, TX</a></li>
+            <li><a href="/central-texas">Austin, TX</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="site-footer__heading">FirstCall Network</div>
+          <ul class="site-footer__list">
+            <li><a href="/" rel="noopener">FirstCall Group</a></li>
+            <li><a href="/locations" rel="noopener">All Locations</a></li>
+            <li><a href="/acquisitions" rel="noopener">Acquisitions</a></li>
+          </ul>
+        </div>
+        <div>
+          <div class="site-footer__heading">Connect</div>
+          <ul class="site-footer__list">
+            <li><a href="https://www.linkedin.com/company/firstcall-mechanical/" rel="noopener">LinkedIn</a></li>
+            <li><a href="/careers" rel="noopener">Careers</a></li>
+            <li><a href="/contact" rel="noopener">Contact</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="site-footer__bottom">
+        <span>&copy; 2026 FirstCall Mechanical. All rights reserved.</span>
+        <span><a href="/" rel="noopener">FirstCall Group</a> &middot; <a href="#">Privacy</a> &middot; <a href="#">Terms</a></span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Leaflet library (open source, free CartoDB tiles, no API key) -->
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+    integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+
+  <!-- Branch data (single source of truth) + dynamic count populator -->
+  <script src="/assets/js/locations-data.js"></script>
+  <script src="/assets/js/fc-counts.js"></script>
+  <script src="/assets/js/fc-map-states.js"></script>
+
+  <!-- Inlined site.js + filter + map init ===== -->
+  <script>
+    (function () {
+      "use strict";
+
+      function initMobileNav() {
+        var toggle = document.querySelector("[data-menu-toggle]");
+        var nav = document.querySelector("[data-site-nav]");
+        if (!toggle || !nav) return;
+        toggle.addEventListener("click", function () {
+          var open = nav.classList.toggle("is-open");
+          toggle.setAttribute("aria-expanded", open ? "true" : "false");
+          document.body.style.overflow = open ? "hidden" : "";
+        });
+        nav.querySelectorAll("a").forEach(function (link) {
+          link.addEventListener("click", function () {
+            nav.classList.remove("is-open");
+            toggle.setAttribute("aria-expanded", "false");
+            document.body.style.overflow = "";
+          });
+        });
+        document.addEventListener("keydown", function (e) {
+          if (e.key === "Escape" && nav.classList.contains("is-open")) {
+            nav.classList.remove("is-open");
+            toggle.setAttribute("aria-expanded", "false");
+            document.body.style.overflow = "";
+            toggle.focus();
+          }
+        });
+      }
+
+      function initHeaderScroll() {
+        var header = document.querySelector(".site-header");
+        if (!header) return;
+        var ticking = false;
+        function update() {
+          if (window.scrollY > 8) header.classList.add("is-scrolled");
+          else header.classList.remove("is-scrolled");
+          ticking = false;
+        }
+        window.addEventListener("scroll", function () {
+          if (!ticking) {
+            window.requestAnimationFrame(update);
+            ticking = true;
+          }
+        }, { passive: true });
+        update();
+      }
+
+      /* ---------- Directory filter ---------- */
+      function initDirectoryFilter() {
+        var input = document.querySelector("[data-filter-input]");
+        var grid = document.querySelector("[data-directory-grid]");
+        var count = document.querySelector("[data-filter-count]");
+        var empty = document.querySelector("[data-directory-empty]");
+        if (!input || !grid) return;
+
+        var cards = Array.prototype.slice.call(grid.querySelectorAll(".loc-card"));
+        var groups = Array.prototype.slice.call(grid.querySelectorAll(".state-group"));
+        var total = cards.length;
+
+        function normalize(s) {
+          return (s || "").toLowerCase().trim();
+        }
+
+        function update() {
+          var q = normalize(input.value);
+          var shown = 0;
+
+          cards.forEach(function (card) {
+            var hay = (card.getAttribute("data-loc") || "") + " " + card.textContent;
+            if (!q || normalize(hay).indexOf(q) !== -1) {
+              card.classList.remove("is-hidden");
+              shown++;
+            } else {
+              card.classList.add("is-hidden");
+            }
+          });
+
+          // Hide state groups whose cards are all filtered out
+          groups.forEach(function (group) {
+            var visible = group.querySelectorAll(".loc-card:not(.is-hidden)").length;
+            if (visible === 0) group.classList.add("is-empty");
+            else group.classList.remove("is-empty");
+          });
+
+          if (count) {
+            count.textContent = q
+              ? "Showing " + shown + " of " + total + " locations"
+              : "Showing " + total + " of " + total + " locations";
+          }
+          if (empty) {
+            if (shown === 0) empty.classList.add("is-visible");
+            else empty.classList.remove("is-visible");
+          }
+        }
+
+        input.addEventListener("input", update);
+        update(); // run once so the count reflects actual cards on the page
+      }
+
+      /* ---------- Leaflet map ---------- */
+      function escHtml(s) {
+        return String(s == null ? "" : s)
+          .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+      }
+
+      function popupHtml(b) {
+        var phoneRow = b.phone
+          ? '<a class="fc-popup__phone" href="tel:' + escHtml(b.phone.replace(/[^0-9+]/g, "")) + '">' + escHtml(b.phone) + '</a>'
+          : '';
+        var ctaRow = b.url
+          ? '<a class="fc-popup__cta" href="' + escHtml(b.url) + '" rel="noopener" target="_blank">Visit website</a>'
+          : '';
+        return (
+          '<div class="fc-popup__location">' + escHtml(b.city + ', ' + b.state) + '</div>' +
+          '<div class="fc-popup__brand">' + escHtml(b.brand) + '</div>' +
+          '<div class="fc-popup__addr">' + escHtml(b.addr) + '</div>' +
+          phoneRow +
+          ctaRow
+        );
+      }
+
+      function initMap() {
+        if (typeof L === "undefined") return;
+        var el = document.getElementById("fc-map");
+        if (!el) return;
+
+        // Single source of truth: assets/js/locations-data.js
+        var branches = Array.isArray(window.FC_LOCATIONS) ? window.FC_LOCATIONS : [];
+        if (!branches.length) { console.error("FC_LOCATIONS missing or empty"); return; }
+
+        // Continental US bounding box — keeps the map focused on the US.
+        // Tight default view focused on the eastern US where the branches cluster.
+        var US_BOUNDS = L.latLngBounds([[27, -100], [44, -68]]);
+
+        var map = L.map(el, {
+          zoomControl: true,
+          scrollWheelZoom: false,   // don't hijack page scroll
+          attributionControl: true,
+          maxBounds: L.latLngBounds([[15, -140], [55, -55]]),  // soft clamp on panning
+          maxBoundsViscosity: 1.0,
+          minZoom: 3,
+          zoomSnap: 1,        // integer zoom only — keeps tiles pixel-aligned (no blur)
+          zoomDelta: 1,
+          fadeAnimation: false,
+        });
+        map.attributionControl.setPrefix('<a href="https://leafletjs.com" rel="noopener">Leaflet</a>');
+
+        // Base tiles + served-state shading + labels-on-top, set up by the
+        // shared helper so the styling stays consistent across pages.
+        if (window.FC_MAP && window.FC_MAP.addBaseAndStates) {
+          window.FC_MAP.addBaseAndStates(map, branches);
+        } else {
+          L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}@2x.png", {
+            subdomains: "abcd",
+            maxZoom: 19,
+            noWrap: true,
+            bounds: [[-85, -180], [85, 180]],
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" rel="noopener">CARTO</a>',
+          }).addTo(map);
+        }
+
+        // Continental US sanity bounds — skip any branch whose coords fall
+        // outside this box (catches mis-geocoded data before it renders into
+        // the ocean / Mexico / Caribbean).
+        var US_LAT_MIN = 24, US_LAT_MAX = 50;
+        var US_LNG_MIN = -125, US_LNG_MAX = -66;
+
+        var rendered = 0, skipped = 0;
+        branches.forEach(function (b) {
+          if (typeof b.lat !== "number" || typeof b.lng !== "number") {
+            console.warn("[fc-map] missing coords:", b.brand, b.city);
+            skipped++;
+            return;
+          }
+          if (b.lat < US_LAT_MIN || b.lat > US_LAT_MAX ||
+              b.lng < US_LNG_MIN || b.lng > US_LNG_MAX) {
+            console.warn("[fc-map] coords out of US bounds, skipping:",
+              b.brand, b.city, b.state, "@", b.lat + "," + b.lng);
+            skipped++;
+            return;
+          }
+          var marker = L.circleMarker([b.lat, b.lng], {
+            radius: 8,
+            fillColor: "#00558C",
+            fillOpacity: 1,
+            color: "#ffffff",
+            weight: 2,
+            opacity: 1,
+            interactive: true,
+          }).addTo(map);
+          marker.bindPopup(popupHtml(b), {
+            className: "fc-popup",
+            maxWidth: 280,
+            offset: [0, -8],
+          });
+          marker.on("mouseover", function () { this.openPopup(); });
+          rendered++;
+        });
+        console.log("[fc-map] rendered " + rendered + " branches, skipped " + skipped);
+
+        map.once("click", function () { map.scrollWheelZoom.enable(); });
+
+        // Explicit setView at an integer zoom (not fitBounds) — fitBounds can
+        // pick a fractional zoom that renders tiles at non-pixel-aligned scale,
+        // causing visible blur. setView with an integer zoom is always crisp.
+        map.setView([35.5, -84], 5);
+
+        // Re-measure after layout settles in case the container was sized late
+        setTimeout(function () { map.invalidateSize(); map.setView([35.5, -84], 5); }, 100);
+      }
+
+      if (document.readyState === "loading") {
+        document.addEventListener("DOMContentLoaded", function () {
+          initMobileNav();
+          initHeaderScroll();
+          initDirectoryFilter();
+          initMap();
+        });
+      } else {
+        initMobileNav();
+        initHeaderScroll();
+        initDirectoryFilter();
+        initMap();
+      }
+    })();
+  </script>
+</body>
+</html>

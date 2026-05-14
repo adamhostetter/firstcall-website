@@ -37,7 +37,7 @@
   var BASE_TILES = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_nolabels/{z}/{x}/{y}@2x.png";
   var LABEL_TILES = "https://{s}.basemaps.cartocdn.com/rastertiles/voyager_only_labels/{z}/{x}/{y}@2x.png";
   var BASE_ATTR = '&copy; <a href="https://www.openstreetmap.org/copyright" rel="noopener">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions" rel="noopener">CARTO</a>';
-  var STATES_URL = "assets/data/us-states.geo.json";
+  var STATES_URL = "/assets/data/us-states.geo.json";
 
   // Served states are derived from FC_LOCATIONS so the map stays in sync with
   // the directory. Pass an `extra` array to shade additional states that have

@@ -40,23 +40,44 @@ http
     if (pathname === "/") pathname = "/index.html";
 
     // Resolve and ensure inside ROOT (prevent path traversal).
-    const filePath = path.normalize(path.join(ROOT, pathname));
+    let filePath = path.normalize(path.join(ROOT, pathname));
     if (!filePath.startsWith(ROOT)) {
       res.writeHead(403);
       return res.end("forbidden");
     }
 
-    fs.stat(filePath, (err, stat) => {
-      if (err || !stat.isFile()) {
-        res.writeHead(404, { "content-type": "text/plain" });
-        return res.end("not found: " + pathname);
-      }
-      const ext = path.extname(filePath).toLowerCase();
+    // Directory index: if path ends in / or resolves to a directory, try /index.html inside it.
+    // Extensionless: if path has no extension and file doesn't exist, try .html (matches Cloudflare Pages).
+    const serve = (fp) => {
+      const ext = path.extname(fp).toLowerCase();
       res.writeHead(200, {
         "content-type": MIME[ext] || "application/octet-stream",
         "cache-control": "no-store",
       });
-      fs.createReadStream(filePath).pipe(res);
+      fs.createReadStream(fp).pipe(res);
+    };
+
+    fs.stat(filePath, (err, stat) => {
+      if (!err && stat.isFile()) return serve(filePath);
+      if (!err && stat.isDirectory()) {
+        const idx = path.join(filePath, "index.html");
+        return fs.stat(idx, (e2, s2) => {
+          if (!e2 && s2.isFile()) return serve(idx);
+          res.writeHead(404, { "content-type": "text/plain" });
+          return res.end("not found: " + pathname);
+        });
+      }
+      // Try appending .html for extensionless requests (e.g. /columbus -> /columbus.html)
+      if (!path.extname(filePath)) {
+        const htmlPath = filePath + ".html";
+        return fs.stat(htmlPath, (e2, s2) => {
+          if (!e2 && s2.isFile()) return serve(htmlPath);
+          res.writeHead(404, { "content-type": "text/plain" });
+          return res.end("not found: " + pathname);
+        });
+      }
+      res.writeHead(404, { "content-type": "text/plain" });
+      return res.end("not found: " + pathname);
     });
   })
   .listen(PORT, () => {
