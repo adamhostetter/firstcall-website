@@ -154,7 +154,9 @@
     .careers-intro p { color: var(--color-text-muted); font-size: var(--text-lg); line-height: var(--leading-relaxed); margin-bottom: var(--space-6); max-width: 56ch; margin-inline: auto; }
 
     /* ===== VALUES tabs ===== */
-    .values { background: var(--color-primary); color: var(--color-text-on-dark); padding-block: var(--space-9); position: relative; overflow: hidden; }
+    .values { background: var(--color-bg-dark); color: var(--color-text-on-dark); padding-block: var(--space-9); position: relative; overflow: hidden; }
+    .values::before { content: ""; position: absolute; inset: 0; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 56 96'><polygon points='28,4 52,18 52,46 28,60 4,46 4,18' fill='none' stroke='%235BA3D6' stroke-width='1' opacity='0.10'/><polygon points='0,52 24,66 24,94 0,108 -24,94 -24,66' fill='none' stroke='%235BA3D6' stroke-width='1' opacity='0.10'/><polygon points='56,52 80,66 80,94 56,108 32,94 32,66' fill='none' stroke='%235BA3D6' stroke-width='1' opacity='0.10'/></svg>"); background-size: 56px 96px; pointer-events: none; }
+    .values > .container { position: relative; }
     .values .eyebrow { color: var(--color-accent-light); }
     .values h2 { color: #fff; text-align: center; margin-bottom: var(--space-2); }
     .values .lead { color: rgba(242,239,227,0.8); text-align: center; margin-inline: auto; margin-bottom: var(--space-7); }
