@@ -17,7 +17,7 @@ FirstCall companies provide commercial and industrial mechanical service across:
 
 - **Commercial HVAC:** chillers, rooftop units, boilers, VRF systems, custom AHUs
 - **Building controls / BMS:** design, installation, and service of building automation systems
-- **Preventative maintenance:** contract-based maintenance programs for commercial portfolios
+- **Planned maintenance:** contract-based maintenance programs for commercial portfolios
 - **Emergency service:** 24/7 dispatch
 - **Retrofit and capital project work:** design-build mechanical upgrades and modernization
 - **Plumbing:** commercial plumbing service and project work

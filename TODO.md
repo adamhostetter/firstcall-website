@@ -16,13 +16,13 @@
 
 - [ ] **Make sure every footer link goes somewhere real.** Walk the footer columns on each page — Services, Contact, Connect, FirstCall Network, the copyright row — and verify every `<a>` lands on a working page (or a real external URL). No `href="#"`, no orphans, no cross-domain links that 404.
 
-- [ ] **Rename "Preventative Maintenance" → "Planned Maintenance" everywhere.** Page title, meta description, canonical URL, hero h1, body copy, nav dropdown label, footer service link, internal references on sibling pages, JSON-LD, and the `columbus/preventative-maintenance.html` filename itself (→ `planned-maintenance.html`). Update every link that points to it.
+- [x] **Rename "Preventative Maintenance" → "Planned Maintenance" everywhere.** Page title, meta description, canonical URL, hero h1, body copy, nav dropdown label, footer service link, internal references on sibling pages, JSON-LD, and the `columbus/preventative-maintenance.html` filename itself (→ `planned-maintenance.html`). Update every link that points to it.
 
 - [ ] **Rebuild the Team page as a low-maintenance, data-driven layout.** Right now every leader is hand-coded HTML — name, title, headshot, bio, modal markup — which means an HTML edit every time someone joins or leaves. Move the leader list to a single JSON (or CMS) source and render the grid + modal from it, so adding/removing a person is one entry, not six file edits. Aim for the design to gracefully handle 4, 7, 10, or 15 people without manual layout fiddling.
 
 ## DFW branch site — data still needed
 
-Files: `dfw.html`, `dfw/preventative-maintenance.html`, `dfw/hvac-modernization.html`, `dfw/project-work.html`, `dfw/contact.html`, `dfw/careers.html`. Phone, address, and lat/lng are real; everything below is placeholder content carried over from Columbus or stubbed.
+Files: `dfw.html`, `dfw/planned-maintenance.html`, `dfw/hvac-modernization.html`, `dfw/project-work.html`, `dfw/contact.html`, `dfw/careers.html`. Phone, address, and lat/lng are real; everything below is placeholder content carried over from Columbus or stubbed.
 
 - [ ] **Branch email** — currently `dispatch@firstcallmechanical.com` (generic FC Mechanical placeholder). Replace with the actual DFW dispatch / branch inbox.
 - [ ] **Hero video** — `<source src="reference/dfw/videos/dfw_hero.mp4">` is a placeholder path that does not exist. The element fails gracefully and the dark-green hero shows behind the text. Drop a real DFW drone / skyline / shop clip at that path (≤10 MB H.264) and the hero plays automatically.
@@ -35,7 +35,7 @@ Files: `dfw.html`, `dfw/preventative-maintenance.html`, `dfw/hvac-modernization.
 
 ## Central Texas (Austin) branch site — data still needed
 
-Files: `central-texas.html`, `central-texas/preventative-maintenance.html`, `central-texas/hvac-modernization.html`, `central-texas/project-work.html`, `central-texas/contact.html`, `central-texas/careers.html`. Address and lat/lng are real; phone is a fallback.
+Files: `central-texas.html`, `central-texas/planned-maintenance.html`, `central-texas/hvac-modernization.html`, `central-texas/project-work.html`, `central-texas/contact.html`, `central-texas/careers.html`. Address and lat/lng are real; phone is a fallback.
 
 - [ ] **Direct branch phone** — currently shows the FCG corporate line `(844) 713-0220` as a fallback (FCG HQ is in Austin so routing is sensible). Replace with a direct Austin branch dispatch line as soon as one exists. Update both the displayed `(844) 713-0220` and the `tel:+18447130220` href everywhere on the site.
 - [ ] **Branch email** — currently `dispatch@firstcallmechanical.com` (placeholder). Replace with the Austin-specific inbox.

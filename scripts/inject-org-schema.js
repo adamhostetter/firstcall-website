@@ -89,7 +89,7 @@ const org = {
     "Building Automation Systems",
     "Commercial Plumbing",
     "Commercial Electrical",
-    "Preventative Maintenance",
+    "Planned Maintenance",
     "Mechanical Retrofit",
     "Chiller Service",
     "Boiler Service",

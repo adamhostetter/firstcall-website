@@ -45,11 +45,11 @@ const SERVICES = {
       "Commercial HVAC equipment replacement and system modernization — chillers, rooftop units, boilers, air handlers, and controls upgrades. Design-build mechanical retrofits for commercial buildings.",
     serviceType: "HVAC Modernization",
   },
-  "preventative-maintenance": {
-    name: "Preventative Maintenance",
+  "planned-maintenance": {
+    name: "Planned Maintenance",
     description:
-      "Contract-based preventative maintenance programs for commercial mechanical systems — scheduled service visits, equipment inspections, and proactive repair recommendations for HVAC, controls, and plumbing.",
-    serviceType: "Preventative Maintenance",
+      "Contract-based planned maintenance programs for commercial mechanical systems — scheduled service visits, equipment inspections, and proactive repair recommendations for HVAC, controls, and plumbing.",
+    serviceType: "Planned Maintenance",
   },
   "project-work": {
     name: "Project Work and Design-Build",

@@ -105,7 +105,7 @@ Check every service your branch offers — only checked items will appear on the
 - [ ] **HVAC Services** — heating, ventilation, air conditioning service
 - [ ] **Building Controls** — BAS / DDC / automation design, install, integration
 - [ ] **Plumbing Services** — commercial plumbing install, repair, maintenance
-- [ ] **Planned Maintenance** — programmatic preventive maintenance contracts
+- [ ] **Planned Maintenance** — programmatic service contracts with scheduled visits, asset-level tracking, and transparent reporting
 - [ ] **Emergency Services** — 24/7 emergency response
 - [ ] **Project Support** — design-build, retrofit, equipment upgrades
 - [ ] **Electrical** — commercial electrical service and project work
