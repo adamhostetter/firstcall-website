@@ -1,0 +1,57 @@
+# Cloudflare Pages _redirects — both FirstCall sites live in this repo,
+# this file routes each domain to its own content.
+#
+# Format: <source> <destination> <status>
+#   200 = rewrite (URL in the browser stays the same; file from destination is served)
+#   301 = permanent redirect (URL in the browser changes)
+# First match wins, top to bottom. Wildcards: * matches any chars, :splat captures it.
+
+# =============================================================================
+# firstcallmechanical.com — serve FCM content from /mechanical/*
+# =============================================================================
+
+# Landing (rewrite so the address bar stays at firstcallmechanical.com/)
+https://firstcallmechanical.com/                  /mechanical/index.html       200
+https://www.firstcallmechanical.com/              /mechanical/index.html       200
+
+# FCM nav pages (rewrites — URLs stay clean)
+https://firstcallmechanical.com/locations         /mechanical/locations.html   200
+https://firstcallmechanical.com/careers           /mechanical/careers.html     200
+https://firstcallmechanical.com/contact           /mechanical/contact.html     200
+https://www.firstcallmechanical.com/locations     /mechanical/locations.html   200
+https://www.firstcallmechanical.com/careers       /mechanical/careers.html     200
+https://www.firstcallmechanical.com/contact       /mechanical/contact.html     200
+
+# Canonical-clean: stray /index.html → /
+https://firstcallmechanical.com/index.html        https://firstcallmechanical.com/   301
+https://www.firstcallmechanical.com/index.html    https://firstcallmechanical.com/   301
+
+# FCG-only pages requested on the FCM host → bounce to FCG
+# (these pages don't exist on firstcallmechanical.com)
+https://firstcallmechanical.com/team*             https://firstcallgroup.com/team:splat          301
+https://firstcallmechanical.com/news*             https://firstcallgroup.com/news:splat          301
+https://firstcallmechanical.com/acquisitions*     https://firstcallgroup.com/acquisitions:splat  301
+https://www.firstcallmechanical.com/team*         https://firstcallgroup.com/team:splat          301
+https://www.firstcallmechanical.com/news*         https://firstcallgroup.com/news:splat          301
+https://www.firstcallmechanical.com/acquisitions* https://firstcallgroup.com/acquisitions:splat  301
+
+# Branch pages (/columbus, /dfw, /central-texas) live at repo root and are
+# served as-is on the FCM host — no rule needed, default routing handles them.
+
+# =============================================================================
+# firstcallgroup.com — canonicalize cross-domain URLs
+# =============================================================================
+
+# Branch URLs on the FCG host → canonical FCM URL
+https://firstcallgroup.com/columbus*              https://firstcallmechanical.com/columbus:splat       301
+https://firstcallgroup.com/dfw*                   https://firstcallmechanical.com/dfw:splat            301
+https://firstcallgroup.com/central-texas*         https://firstcallmechanical.com/central-texas:splat  301
+https://www.firstcallgroup.com/columbus*          https://firstcallmechanical.com/columbus:splat       301
+https://www.firstcallgroup.com/dfw*               https://firstcallmechanical.com/dfw:splat            301
+https://www.firstcallgroup.com/central-texas*     https://firstcallmechanical.com/central-texas:splat  301
+
+# /mechanical/* on the FCG host → strip the prefix, send to FCM clean URL
+https://firstcallgroup.com/mechanical             https://firstcallmechanical.com/         301
+https://firstcallgroup.com/mechanical/*           https://firstcallmechanical.com/:splat   301
+https://www.firstcallgroup.com/mechanical         https://firstcallmechanical.com/         301
+https://www.firstcallgroup.com/mechanical/*       https://firstcallmechanical.com/:splat   301
